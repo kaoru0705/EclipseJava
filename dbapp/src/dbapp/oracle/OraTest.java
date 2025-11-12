@@ -20,6 +20,10 @@ public class OraTest {
 		// 오라클용 드라이버 메모리에 로드!!
 		// 아래와 같이 forName 메서드를 이용하면, 동적으로 클래스가 메서드 영역(static영역)으로 올라감
 		
+		
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		System.out.println();
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			System.out.println("드라이버 로드 성공");
@@ -31,7 +35,7 @@ public class OraTest {
 			
 			// 접속이 성공되었는지 확인하려면, 접속 성공 후 반환되는 Connection
 			// 인터페이스가 메모리에 올라왔는지 체크하면 된다..
-			Connection con = DriverManager.getConnection(url, id, pwd);
+			con = DriverManager.getConnection(url, id, pwd);
 			
 			if(con != null) {
 				System.out.println("오라클 접속 성공");
@@ -43,7 +47,7 @@ public class OraTest {
 				// 아직까지는 쿼리문을 준비만 하고, 아직 실행은 안한 상태!!
 				// 자바의 데이터베이스 연동 기술을 가리켜 JDBC라 하며, 주로 java.sql 패키지에서 지원함
 				// jdbc 관련 객체 중 PreparedStatement 인터페이스가 쿼리문을 수행하는 역할을 함
-				PreparedStatement pstmt = con.prepareStatement(sql); // 쿼리문을 수행할 인터페이스 메모리에 올라옴
+				pstmt = con.prepareStatement(sql); // 쿼리문을 수행할 인터페이스 메모리에 올라옴
 				
 				// 수행!! execute
 				// executeUpdate() 메서드는 실행 후 두 가지 경우의 수 를 반환한다.
@@ -58,7 +62,7 @@ public class OraTest {
 				else {
 					msg = "등록 실패";
 				}
-				System.out.println("msg");
+				System.out.println(msg);
 				
 				
 			}else {
@@ -73,6 +77,20 @@ public class OraTest {
 			e.printStackTrace();
 		} catch(SQLException e) {
 			e.printStackTrace();
+		} finally {
+			// try문이든, catch문이든 언제나 db는 닫아야 함
+			// 따라서 finally에서 처리
+			try {
+				pstmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}				
+
 		}
 		
 	}
